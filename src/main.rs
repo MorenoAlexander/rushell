@@ -1,8 +1,11 @@
 #[macro_use]
+
 extern crate simple_error;
 use simple_error::SimpleError;
 
 use std::io::{stdin, stdout, Write};
+use std::process::Command;
+
 
 
 
@@ -63,16 +66,19 @@ fn process_command (input : String ) -> Result<bool, SimpleError> {
     let mut input_split : Vec<&str> = input.trim_end().split_whitespace().collect();
     let command : &str = input_split.remove(0);
 
-    print!("command: {} args:",command);
-
-    for arg in input_split {
-        print!(" {}", arg)
-    }
     
-    if command == "exit" {
-        Ok(true)
+    
+    if command == "exit"{
+        return Ok(true);
     }
-    else {
-        return Ok(false)
-    }
+
+    print!("command: {}",command);
+    //Execute the command
+    let comm_output = Command::new(command).args(input_split).output().expect("failed to execute process");
+
+    println!("status: {},", comm_output.status);
+
+    stdout().write_all(&comm_output.stdout).unwrap();
+    stdout().write_all(&comm_output.stderr).unwrap();
+    Ok(false)
 }
