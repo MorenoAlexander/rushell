@@ -9,6 +9,8 @@ use std::process::Command;
 
 
 
+
+
 use std::error::Error;
 
 fn main() {
@@ -40,8 +42,8 @@ fn main() {
 }
 
 fn get_user_input()  -> Result<String, SimpleError> {
-    print!("R$> ");
-    stdout().flush();
+    print!("{}/R$> ", get_current_working_directory());
+    stdout().flush().expect("Error flushing stdout");
     let mut buffer_input = String::new();
     
     
@@ -72,13 +74,20 @@ fn process_command (input : String ) -> Result<bool, SimpleError> {
         return Ok(true);
     }
 
-    print!("command: {}",command);
+    // print!("command: {}",command);
     //Execute the command
     let comm_output = Command::new(command).args(input_split).output().expect("failed to execute process");
 
-    println!("status: {},", comm_output.status);
+    // println!("status: {},", comm_output.status);
 
     stdout().write_all(&comm_output.stdout).unwrap();
     stdout().write_all(&comm_output.stderr).unwrap();
     Ok(false)
+}
+
+
+fn get_current_working_directory() -> String {
+    let output = Command::new("pwd").output().expect("failed to execute process");
+    let stdout = String::from_utf8_lossy(&output.stdout).clone();
+    stdout.to_string().replace("/home", "~").to_string().trim_end().to_string()
 }
