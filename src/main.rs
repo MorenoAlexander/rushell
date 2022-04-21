@@ -7,7 +7,7 @@ extern crate simple_error;
 use crate::prompt::print_prompt;
 use simple_error::SimpleError;
 use std::error::Error;
-use std::io::{stdin, stdout, Write};
+use std::io::{stderr, stdin, stdout, Write};
 use std::process::Command;
 use users::{get_current_uid, get_user_by_uid};
 
@@ -15,6 +15,8 @@ fn main() {
     println!("Welcome to rushell!");
 
     loop {
+        print_prompt();
+        stdout().flush().expect("Error flushing stdout");
         let input = match get_user_input() {
             Ok(res) => res,
             Err(_error) => {
@@ -37,10 +39,7 @@ fn main() {
 }
 
 fn get_user_input() -> Result<String, SimpleError> {
-    print_prompt();
-    stdout().flush().expect("Error flushing stdout");
     let mut buffer_input = String::new();
-
     if stdin().read_line(&mut buffer_input).is_err() {
         bail!(SimpleError::new("Error from stdin"))
     };
@@ -65,12 +64,17 @@ fn process_command(input: String) -> Result<bool, SimpleError> {
     }
 
     //Execute the command
-    let comm_output = Command::new(command)
-        .args(input_split)
-        .output()
-        .expect("failed to execute process");
+    let comm_output = Command::new(command).args(input_split).output();
 
-    stdout().write_all(&comm_output.stdout).unwrap();
-    stdout().write_all(&comm_output.stderr).unwrap();
+    match comm_output {
+        Ok(output) => {
+            stdout().write_all(&output.stdout).unwrap();
+            stdout().write_all(&output.stderr).unwrap();
+        }
+        Err(simple_error) => stderr()
+            .write_all(simple_error.to_string().as_bytes())
+            .unwrap(),
+    }
+
     Ok(false)
 }
