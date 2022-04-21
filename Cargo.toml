@@ -1,5 +1,5 @@
 [package]
-name = "rustshell"
+name = "rushell"
 version = "0.1.0"
 authors = ["MorenoAlexander <am@alexandermoreno.com>"]
 edition = "2021"
@@ -8,3 +8,4 @@ target = "src/main.rs"
 
 [dependencies]
 simple-error = "0.2"
+users = "0.11.0"
