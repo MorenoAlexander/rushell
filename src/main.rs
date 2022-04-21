@@ -7,6 +7,7 @@ extern crate simple_error;
 use crate::prompt::print_prompt;
 use simple_error::SimpleError;
 use std::error::Error;
+use std::fmt::format;
 use std::io::{stderr, stdin, stdout, Write};
 use std::process::Command;
 use users::{get_current_uid, get_user_by_uid};
@@ -20,7 +21,7 @@ fn main() {
         let input = match get_user_input() {
             Ok(res) => res,
             Err(_error) => {
-                println!("An error occured while processing that input. Sorry!");
+                println!("An error occurred while processing that input. Sorry!");
                 continue;
             }
         };
@@ -72,7 +73,14 @@ fn process_command(input: String) -> Result<bool, SimpleError> {
             stdout().write_all(&output.stderr).unwrap();
         }
         Err(simple_error) => stderr()
-            .write_all(simple_error.to_string().as_bytes())
+            .write_all(
+                format!(
+                    "command not found: {}, {}\n",
+                    command,
+                    simple_error.to_string()
+                )
+                .as_bytes(),
+            )
             .unwrap(),
     }
 
