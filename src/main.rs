@@ -6,8 +6,6 @@ extern crate simple_error;
 
 use crate::prompt::print_prompt;
 use simple_error::SimpleError;
-use std::error::Error;
-use std::fmt::format;
 use std::io::{stderr, stdin, stdout, Write};
 use std::process::Command;
 use users::{get_current_uid, get_user_by_uid};
