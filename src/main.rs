@@ -11,7 +11,7 @@ use std::io::{stderr, stdin, stdout, Write};
 use std::process::Command;
 
 fn main() {
-    ctrlc::set_handler(move || {});
+    ctrlc::set_handler(move || {}).expect("Error setting Ctrl-C handler");
 
     println!("Welcome to rushell!");
 
