@@ -10,10 +10,9 @@ use ctrlc;
 use simple_error::SimpleError;
 use tokenizer::command::CommandInput;
 use std::io::{stderr, stdin, stdout, Write};
-use std::process::Command;
 
-fn
-main() {
+
+fn main() {
     ctrlc::set_handler(move || {}).expect("Error setting Ctrl-C handler");
 
     println!("Welcome to rushell!");
@@ -71,7 +70,7 @@ fn process_command(input: String) -> Result<bool, SimpleError> {
     }
 
     //Execute the command
-    let comm_output = Command::new(command_input.command).args(command_input.args).output();
+    let comm_output = command_input.execute();
 
     match comm_output {
         Ok(output) => {
