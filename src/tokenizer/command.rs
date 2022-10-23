@@ -1,4 +1,5 @@
 
+
 /*
 Need to handle stdin with various command splitters
 
@@ -18,8 +19,35 @@ echo "c1" && echo "c2"
 
 echo "c1" ; echo "c2"
 
-*/
 
+> overwrites output of command into file
+
+echo "This is a test!" > output.txt
+
+```
+This is a test!
+```
+
+>> appends stdout to file along with any additional text
+
+echo "This is a test!" >> output.txt
+
+```
+This is a test!This is a test!
+```
+
+
+*/
+use std::{process::{Command, Output}};
+
+
+
+pub enum CommandType<'a> {
+    None(CommandInput<'a>),
+    Pipe(CommandInput<'a>),
+    Ampersand(CommandInput<'a>),
+    Semi(CommandInput<'a>)
+}
 
 
 #[derive(Debug)]
@@ -31,8 +59,12 @@ pub struct CommandInput<'a> {
 impl<'a> CommandInput<'a> {
     pub fn new(mut input_split:Vec<&'a str>) -> Self {
         let command = input_split.remove(0);
-
         CommandInput { command, args: input_split }
+    }
+
+    pub fn execute(&self) -> Result<Output, std::io::Error> {
+        Command::new(self.command).args(&self.args).output()
+
     }
 
 }
