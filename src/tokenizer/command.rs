@@ -6,17 +6,17 @@ Need to handle stdin with various command splitters
 
 echo "c1" | echo
 
-\ - does not split the command but simoply outputs the text and creates a new line for the user to continue writing it out
+\ - does not split the command but simply outputs the stdin and creates a new line for the user to continue writing it out
 
 echo "c1" \ "c2"
 
-& - runs each command sequentially
+&& - runs the second command IIF the first command executes successfully
 
-echo "c1" & echo "c2"
+echo "c1" && echo "c2"
 
-; - separates both commands independantly of each other
+; - separates both commands independantly of each other in order
 
-echo "c1" & echo "c2"
+echo "c1" ; echo "c2"
 
 */
 
