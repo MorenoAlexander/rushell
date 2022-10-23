@@ -1,5 +1,6 @@
 mod directory;
 mod prompt;
+mod tokenizer;
 
 #[macro_use]
 extern crate simple_error;
@@ -7,10 +8,12 @@ extern crate simple_error;
 use crate::prompt::print_prompt;
 use ctrlc;
 use simple_error::SimpleError;
+use tokenizer::command::CommandInput;
 use std::io::{stderr, stdin, stdout, Write};
 use std::process::Command;
 
-fn main() {
+fn
+main() {
     ctrlc::set_handler(move || {}).expect("Error setting Ctrl-C handler");
 
     println!("Welcome to rushell!");
@@ -56,16 +59,19 @@ fn process_command(input: String) -> Result<bool, SimpleError> {
         bail!(SimpleError::new("no input"));
     }
 
-    let mut input_split: Vec<&str> = input.trim_end().split_whitespace().collect();
-    let command: &str = input_split.remove(0);
+    let input_split: Vec<&str> = input.trim_end().split_whitespace().collect();
+    let command_input = CommandInput::new(input_split);
 
-    match command {
+    dbg!(&command_input);
+
+    match command_input.command {
+        "cd" => return Ok(false),
         "exit" => return Ok(true),
         _ => {}
     }
 
     //Execute the command
-    let comm_output = Command::new(command).args(input_split).output();
+    let comm_output = Command::new(command_input.command).args(command_input.args).output();
 
     match comm_output {
         Ok(output) => {
@@ -76,7 +82,7 @@ fn process_command(input: String) -> Result<bool, SimpleError> {
             .write_all(
                 format!(
                     "command not found: {}, {}\n",
-                    command,
+                    command_input.command,
                     simple_error.to_string()
                 )
                 .as_bytes(),
