@@ -5,7 +5,7 @@ mod tokenizer;
 #[macro_use]
 extern crate simple_error;
 
-use crate::prompt::print_prompt;
+use crate::{prompt::print_prompt, directory::change_working_directory};
 use ctrlc;
 use simple_error::SimpleError;
 use tokenizer::command::CommandInput;
@@ -64,30 +64,30 @@ fn process_command(input: String) -> Result<bool, SimpleError> {
     dbg!(&command_input);
 
     match command_input.command {
-        "cd" => return Ok(false),
+        "cd" => {
+            change_working_directory(command_input.args.get(0).or(Some(&env!("HOME"))).expect("Error!"))
+        },
         "exit" => return Ok(true),
-        _ => {}
-    }
+        _ => {
+            let comm_output = command_input.execute();
 
-    //Execute the command
-    let comm_output = command_input.execute();
-
-    match comm_output {
-        Ok(output) => {
-            stdout().write_all(&output.stdout).unwrap();
-            stdout().write_all(&output.stderr).unwrap();
-        }
-        Err(simple_error) => stderr()
-            .write_all(
-                format!(
-                    "command not found: {}, {}\n",
-                    command_input.command,
-                    simple_error.to_string()
+            match comm_output {
+                Ok(output) => {
+                    stdout().write_all(&output.stdout).unwrap();
+                    stdout().write_all(&output.stderr).unwrap();
+                }
+                Err(simple_error) => stderr()
+                .write_all(
+                        format!(
+                                "command not found: {}, {}\n",
+                        command_input.command,
+                        simple_error.to_string()
+                        )
+                        .as_bytes(),
                 )
-                .as_bytes(),
-            )
-            .unwrap(),
+                .unwrap(),
+            }
+        }
     }
-
     Ok(false)
 }
