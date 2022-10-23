@@ -30,9 +30,9 @@ pub struct CommandInput<'a> {
 
 impl<'a> CommandInput<'a> {
     pub fn new(mut input_split:Vec<&'a str>) -> Self {
-        let command_str = input_split.remove(0);
+        let command = input_split.remove(0);
 
-        CommandInput { command: command_str, args: input_split }
+        CommandInput { command, args: input_split }
     }
 
 }
