@@ -8,4 +8,4 @@ target = "src/main.rs"
 
 [dependencies]
 simple-error = "0.2"
-ctrlc = "3.2.3"
+ctrlc = "3.2.5"
