@@ -1,3 +1,4 @@
+mod commands;
 mod directory;
 mod prompt;
 
@@ -65,24 +66,17 @@ fn process_command(input: String) -> Result<bool, SimpleError> {
     }
 
     //Execute the command
-    let comm_output = Command::new(command).args(input_split).output();
+    let comm_output = Command::new(command).args(input_split).spawn();
 
     match comm_output {
-        Ok(output) => {
-            stdout().write_all(&output.stdout).unwrap();
-            stdout().write_all(&output.stderr).unwrap();
+        Ok(mut child) => match child.wait() {
+            Ok(status) => Ok(false),
+            Err(_error) => {
+                bail!(SimpleError::new("Error waiting for child"));
+            }
+        },
+        Err(_error) => {
+            bail!(SimpleError::new("Error running command"))
         }
-        Err(simple_error) => stderr()
-            .write_all(
-                format!(
-                    "command not found: {}, {}\n",
-                    command,
-                    simple_error.to_string()
-                )
-                .as_bytes(),
-            )
-            .unwrap(),
     }
-
-    Ok(false)
 }
