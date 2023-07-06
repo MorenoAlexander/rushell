@@ -8,7 +8,7 @@ extern crate simple_error;
 use crate::prompt::print_prompt;
 use ctrlc;
 use simple_error::SimpleError;
-use std::io::{stderr, stdin, stdout, Write};
+use std::io::{stdin, stdout, Write};
 use std::process::Command;
 
 fn main() {
